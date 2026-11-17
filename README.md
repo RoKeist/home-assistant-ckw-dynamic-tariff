@@ -160,4 +160,4 @@ Ein numerischer Zustandsauslöser reagiert, wenn der Sensor die Schwelle übersc
 
 ## Mitwirken
 
-Fehlermeldungen und Pull Requests mit Korrekturen, getesteten Verbesserungen oder Hinweisen zur Kompatibilität sind willkommen. Entferne persönliche Angaben, Tokens, IP-Adressen und private Home-Assistant-Entitätsnamen, bevor du Konfigurationen oder Protokolle teilst.
+Fehlermeldungen und Pull Requests mit Korrekturen, getesteten Verbesserungen oder Hinweisen zur Kompatibilität sind willkommen. Entferne persönliche Angaben, Tokens, IP-Adressen und private Home-Assistant-Entitätsnamen, bevor du Konfigurationen oder Protokolle teilst. thx
