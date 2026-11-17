@@ -1,29 +1,29 @@
-# CKW Dynamic Tariff for Home Assistant
+# CKW dynamischer Tarif für Home Assistant
 
-Community examples for reading CKW's public dynamic tariff API in Home Assistant, displaying today's and tomorrow's prices, and using the current price in automations.
+Community-Beispiele, um die öffentliche CKW-API für dynamische Tarife in Home Assistant abzufragen, die Preise für heute und morgen anzuzeigen und den aktuellen Preis in Automationen zu verwenden.
 
-This is an independent community project. It is not affiliated with, endorsed by, or supported by CKW or the Home Assistant project.
+Dieses unabhängige Community-Projekt steht in keiner Verbindung zu CKW oder zum Home-Assistant-Projekt und wird von diesen weder unterstützt noch offiziell bestätigt.
 
-## What this provides
+## Inhalt
 
-- A Home Assistant REST sensor that fetches CKW tariff data.
-- Two Markdown dashboard cards: today's prices and tomorrow's prices.
-- A template sensor for the price of the current 15-minute interval.
-- An automation example that triggers when the price falls below a threshold.
+- Ein REST-Sensor für Home Assistant, der CKW-Tarifdaten abruft.
+- Zwei Markdown-Karten fürs Dashboard: Preise von heute und morgen.
+- Ein Template-Sensor für den Preis des aktuell gültigen 15-Minuten-Intervalls.
+- Ein Automationsbeispiel, das bei Unterschreiten eines Preisgrenzwerts ausgelöst wird.
 
-CKW publishes prices as 15-minute values. A complete day contains 96 values. CKW's tariff profile for the following day is available from around 12:00 noon. The API's `integrated` value is in CHF/kWh and is not necessarily the complete all-in amount on a bill: taxes, meter charges, concession fees, and demand charges may be excluded.
+CKW veröffentlicht Viertelstundenwerte. Ein vollständiger Tag umfasst 96 Werte. Das Tarifprofil für den Folgetag ist ungefähr ab 12 Uhr mittags verfügbar. Der API-Wert `integrated` wird in CHF/kWh angegeben und entspricht nicht zwingend dem vollständigen Rechnungsbetrag: Steuern, Messentgelte, Konzessionsabgaben und Leistungspreise können darin fehlen.
 
-## Requirements
+## Voraussetzungen
 
-- A Home Assistant installation with the built-in [RESTful integration](https://www.home-assistant.io/integrations/rest/).
-- A CKW tariff and tariff name that match your account. `home_dynamic` is for annual consumption below 50 MWh; `business_dynamic` is for consumption above 50 MWh.
-- A file editor or another way to edit `configuration.yaml`.
+- Eine Home-Assistant-Installation mit der integrierten [RESTful-Integration](https://www.home-assistant.io/integrations/rest/).
+- Ein CKW-Tarif und ein Tarifname, die zu deinem Vertrag passen. `home_dynamic` gilt bei einem Jahresverbrauch unter 50 MWh; `business_dynamic` bei einem Jahresverbrauch über 50 MWh.
+- Ein Datei-Editor oder eine andere Möglichkeit, `configuration.yaml` zu bearbeiten.
 
-The examples below use `sensor.ckw_tarifdaten` as the REST sensor entity ID. Home Assistant should create the entity `sensor.ckw_tarifdaten` from the name above. If it creates a different ID in your installation, replace it in the templates and cards below.
+Die Beispiele verwenden `sensor.ckw_tarifdaten` als Entitäts-ID des REST-Sensors. Die Konfiguration unten verwendet den Namen „CKW Tarifdaten“. Falls Home Assistant bei dir eine andere ID erstellt, ersetze sie in den Vorlagen und Karten.
 
-## 1. Fetch CKW prices
+## 1. CKW-Preise abrufen
 
-Add this under the top-level `rest:` key in `configuration.yaml`. If you already have a `rest:` section, add the list item under it instead of creating a duplicate top-level key.
+Füge diesen Abschnitt unter dem obersten Schlüssel `rest:` in `configuration.yaml` ein. Wenn bereits ein Abschnitt `rest:` existiert, ergänze dort den Listeneintrag, anstatt einen zweiten obersten `rest:`-Schlüssel anzulegen.
 
 ```yaml
 rest:
@@ -43,17 +43,17 @@ rest:
           - prices
 ```
 
-The request covers today and tomorrow, from local midnight today to local midnight the day after tomorrow. The timestamps are generated using Home Assistant's configured timezone. The example polls every six hours; adjust `scan_interval` if needed.
+Die Abfrage umfasst heute und morgen: von heute um Mitternacht bis Mitternacht übermorgen. Die Zeitstempel verwenden die in Home Assistant eingestellte Zeitzone. Das Beispiel fragt die API alle sechs Stunden ab; passe `scan_interval` bei Bedarf an.
 
-After editing the file, validate the Home Assistant configuration and restart or reload the relevant configuration. Check the sensor under **Developer tools → States**. Its state is `OK`; the actual tariff data is in the `publication_timestamp` and `prices` attributes.
+Prüfe nach dem Bearbeiten die Home-Assistant-Konfiguration und starte Home Assistant neu oder lade die betreffende Konfiguration neu. Kontrolliere den Sensor unter **Entwicklerwerkzeuge → Zustände**. Sein Zustand ist `OK`; die Tarifdaten stehen in den Attributen `publication_timestamp` und `prices`.
 
-## 2. Dashboard cards for today and tomorrow
+## 2. Dashboard-Karten für heute und morgen
 
-Create a dashboard section with two columns (or a section wide enough for two cards). Add two **Manual** cards to that section, one in each column. Paste each complete YAML block into its card's YAML editor.
+Erstelle einen Dashboard-Abschnitt mit zwei Spalten (oder einen ausreichend breiten Abschnitt). Füge in jede Spalte eine **Manuelle** Karte ein. Füge den vollständigen YAML-Block jeweils im YAML-Editor der Karte ein.
 
-On narrower screens Home Assistant may stack the cards vertically.
+Auf schmalen Bildschirmen kann Home Assistant die Karten untereinander anordnen.
 
-### Today's prices
+### Preise von heute
 
 ```yaml
 type: markdown
@@ -69,14 +69,14 @@ content: |
       {% set ns.rows = ns.rows + ['| ' ~ interval ~ ' | ' ~ rp|string ~ ' Rp./kWh |'] %}
     {% endif %}
   {% endfor %}
-  # CKW prices today · {{ tag_dt.strftime('%d.%m.%Y') }}
+  # CKW-Preise heute · {{ tag_dt.strftime('%d.%m.%Y') }}
 
-  | Time | Price |
+  | Zeit | Preis |
   |:---|---:|
   {{ ns.rows | join('\n  ') }}
 ```
 
-### Tomorrow's prices
+### Preise von morgen
 
 ```yaml
 type: markdown
@@ -92,18 +92,18 @@ content: |
       {% set ns.rows = ns.rows + ['| ' ~ interval ~ ' | ' ~ rp|string ~ ' Rp./kWh |'] %}
     {% endif %}
   {% endfor %}
-  # CKW prices tomorrow · {{ tag_dt.strftime('%d.%m.%Y') }}
+  # CKW-Preise morgen · {{ tag_dt.strftime('%d.%m.%Y') }}
 
-  | Time | Price |
+  | Zeit | Preis |
   |:---|---:|
   {{ ns.rows | join('\n  ') }}
 ```
 
-The cards convert the API value from CHF/kWh to Rp./kWh by multiplying by 100. The tomorrow card will be empty until CKW publishes the next day's profile and Home Assistant fetches it.
+Die Karten rechnen den API-Wert von CHF/kWh in Rp./kWh um, indem sie ihn mit 100 multiplizieren. Die Karte für morgen bleibt leer, bis CKW das Profil für den Folgetag veröffentlicht hat und Home Assistant die Daten abruft.
 
-## 3. Current price template sensor
+## 3. Template-Sensor für den aktuellen Preis
 
-Create a template sensor helper from **Settings → Devices & services → Helpers → Create helper → Template → Sensor**. Use `CKW Current Price` as the name and enter this in the state template field:
+Erstelle einen Template-Sensor-Helfer unter **Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → Template → Sensor**. Verwende als Namen `CKW aktueller Preis` und füge dieses Template ins Zustandsfeld ein:
 
 ```jinja
 {% set prices = state_attr('sensor.ckw_tarifdaten', 'prices') or [] %}
@@ -119,45 +119,45 @@ Create a template sensor helper from **Settings → Devices & services → Helpe
 {{ current.value }}
 ```
 
-Set the unit to `CHF/kWh`. Leave the device class empty. If the helper offers a state class, choose `measurement`. Save the helper and check the entity ID Home Assistant created. The examples below use `sensor.ckw_current_price`; replace it with the actual ID if different.
+Setze die Einheit auf `CHF/kWh`. Lasse die Geräteklasse leer. Falls der Helfer eine Zustandsklasse anbietet, wähle `measurement` (Messwert). Speichere den Helfer und prüfe die von Home Assistant erstellte Entitäts-ID. Die folgenden Beispiele verwenden `sensor.ckw_aktueller_preis`; ersetze sie durch die tatsächlich erstellte ID, falls sie abweicht.
 
-## 4. Automation example
+## 4. Automationsbeispiel
 
-This example triggers when the current price crosses below 0.20 CHF/kWh (20 Rp./kWh). Add your own action under `action:`.
+Dieses Beispiel wird ausgelöst, wenn der aktuelle Preis die Schwelle von 0,20 CHF/kWh (20 Rp./kWh) nach unten überschreitet. Ergänze unter `actions:` die gewünschte Aktion.
 
 ```yaml
-alias: CKW price below 20 Rp per kWh
+alias: CKW-Preis unter 20 Rp. pro kWh
 triggers:
   - trigger: numeric_state
-    entity_id: sensor.ckw_current_price
+    entity_id: sensor.ckw_aktueller_preis
     below: 0.20
 actions:
-  # Add the action you want to run here.
+  # Ergänze hier die gewünschte Aktion.
   - action: persistent_notification.create
     data:
-      title: CKW price is low
-      message: The current CKW price is below 20 Rp./kWh.
+      title: CKW-Preis ist tief
+      message: Der aktuelle CKW-Preis liegt unter 20 Rp./kWh.
 mode: single
 ```
 
-A numeric-state trigger fires when the entity crosses the threshold. If you need an action once in every qualifying 15-minute interval, use a periodic time trigger and a separate price condition instead.
+Ein numerischer Zustandsauslöser reagiert, wenn der Sensor die Schwelle überschreitet. Soll eine Aktion in jedem passenden 15-Minuten-Intervall ausgeführt werden, verwende stattdessen einen periodischen Zeitauslöser mit einer separaten Preisbedingung.
 
-## Troubleshooting
+## Fehlerbehebung
 
-- **The REST sensor state says `OK`:** This is expected. The prices are sensor attributes, not its state.
-- **No entity appears in the States page:** Use the entity filter in Home Assistant, not the browser's find-in-page feature. Search by the sensor's friendly name or `ckw`.
-- **Tomorrow's card is empty:** Check the last `start_timestamp` in the `prices` attribute and the `publication_timestamp`. CKW publishes the next day's prices around noon.
-- **Only today's prices appear:** Confirm the request includes both `start_timestamp` and `end_timestamp` as shown above, then refresh the sensor after the next-day profile is published.
-- **The Markdown table renders as plain text:** Paste the complete block, including `type: markdown` and `content: |`, into the card's YAML editor.
-- **Cards are stacked:** Put both cards in the same two-column section and check the dashboard at a wider screen size. Home Assistant may use one column on narrow displays.
-- **The automation does not trigger:** Check the current-price sensor's actual entity ID and confirm its state is numeric, for example `0.1583`.
+- **Der REST-Sensor zeigt `OK`:** Das ist erwartungsgemäss. Die Preise sind Attribute des Sensors, nicht sein Zustand.
+- **Die Entität erscheint nicht auf der Zuständeseite:** Verwende in Home Assistant den Entitätsfilter und nicht die Seitensuche des Browsers. Suche nach dem Anzeigenamen des Sensors oder nach `ckw`.
+- **Die Karte für morgen ist leer:** Prüfe den letzten `start_timestamp` im Attribut `prices` sowie `publication_timestamp`. CKW veröffentlicht die Preise für den Folgetag ungefähr um die Mittagszeit.
+- **Es erscheinen nur die heutigen Preise:** Kontrolliere, ob die Abfrage wie oben sowohl `start_timestamp` als auch `end_timestamp` enthält. Aktualisiere den Sensor erneut, nachdem CKW das nächste Tagesprofil veröffentlicht hat.
+- **Die Markdown-Tabelle erscheint als normaler Text:** Füge den vollständigen Block einschliesslich `type: markdown` und `content: |` im YAML-Editor der Karte ein.
+- **Die Karten stehen untereinander:** Ordne beide Karten demselben zweispaltigen Abschnitt zu und prüfe das Dashboard auf einem breiteren Bildschirm. Auf schmalen Displays kann Home Assistant auf eine Spalte wechseln.
+- **Die Automation wird nicht ausgelöst:** Prüfe die tatsächliche Entitäts-ID des aktuellen Preis-Sensors und ob sein Zustand numerisch ist, zum Beispiel `0.1583`.
 
-## References
+## Quellen
 
-- [CKW dynamic tariff technical information and API](https://www.ckw.ch/energie/strom/dynamischer-tarif-fuer-privatkunden-und-unternehmen/dynamischer-tarif-technische-voraussetzungen)
-- [Home Assistant RESTful integration](https://www.home-assistant.io/integrations/rest/)
-- [Home Assistant RESTful Sensor](https://www.home-assistant.io/integrations/sensor.rest/)
+- [CKW: Technische Informationen zum dynamischen Tarif und zur API](https://www.ckw.ch/energie/strom/dynamischer-tarif-fuer-privatkunden-und-unternehmen/dynamischer-tarif-technische-voraussetzungen)
+- [Home Assistant: RESTful-Integration](https://www.home-assistant.io/integrations/rest/)
+- [Home Assistant: RESTful Sensor](https://www.home-assistant.io/integrations/sensor.rest/)
 
-## Contributing
+## Mitwirken
 
-Issues and pull requests with corrections, tested improvements, or compatibility notes are welcome. Please remove personal information, tokens, IP addresses, and private Home Assistant entity names before sharing configuration or logs.
+Fehlermeldungen und Pull Requests mit Korrekturen, getesteten Verbesserungen oder Hinweisen zur Kompatibilität sind willkommen. Entferne persönliche Angaben, Tokens, IP-Adressen und private Home-Assistant-Entitätsnamen, bevor du Konfigurationen oder Protokolle teilst.

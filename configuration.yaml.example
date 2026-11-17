@@ -1,21 +1,21 @@
-# Example CKW dynamic tariff REST sensor for Home Assistant.
-# Merge this into your existing configuration.yaml; do not add a second
-# top-level `rest:` key if you already have one.
+# Beispiel für einen CKW-REST-Sensor für dynamische Tarife in Home Assistant.
+# Füge diesen Abschnitt in deine configuration.yaml ein. Lege keinen zweiten
+# obersten Schlüssel `rest:` an, wenn bereits einer vorhanden ist.
 rest:
   - resource: https://e-ckw-public-data.de-c1.eu1.cloudhub.io/api/v1/netzinformationen/energie/dynamische-preise
     scan_interval: 21600
     params:
-      # Use home_dynamic for annual consumption below 50 MWh;
-      # use business_dynamic above 50 MWh.
+      # home_dynamic gilt bei einem Jahresverbrauch unter 50 MWh;
+      # bei mehr als 50 MWh verwende business_dynamic.
       tariff_name: home_dynamic
-      # Available examples: integrated, grid, grid_usage, electricity.
+      # Mögliche Werte: integrated, grid, grid_usage, electricity.
       tariff_type: integrated
-      # Request today and tomorrow using Home Assistant's configured timezone.
+      # Abfrage für heute und morgen in der in Home Assistant eingestellten Zeitzone.
       start_timestamp: "{{ today_at('00:00').isoformat() }}"
       end_timestamp: "{{ (today_at('00:00') + timedelta(days=2)).isoformat() }}"
     sensor:
-      - name: "CKW Tariff Data"
-        unique_id: ckw_tariff_data
+      - name: "CKW Tarifdaten"
+        unique_id: ckw_tarifdaten
         value_template: "OK"
         json_attributes:
           - publication_timestamp
