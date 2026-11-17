@@ -20,3 +20,4 @@ rest:
         json_attributes:
           - publication_timestamp
           - prices
+          
