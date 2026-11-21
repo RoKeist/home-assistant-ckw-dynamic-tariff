@@ -8,7 +8,7 @@ Dieses Community-Beispiel ist unabhängig und steht in keiner Verbindung zu CKW 
 
 Das folgende Bild zeigt das vollständige Dashboard mit Beispielwerten vom 21. und 22. November 2026. Die Preise, Zeitfenster und Datumsangaben ändern sich laufend und dienen nur zur Illustration.
 
-![Vorschau des CKW-Home-Assistant-Dashboards](assets/dashboard-preview.png)
+![Vorschau des CKW-Home-Assistant-Dashboards](dashboard-preview.png)
 
 Links im Dashboard stehen der aktuelle Strompreis, die vier günstigsten und teuersten 2-Stunden-Fenster für heute und morgen sowie die farbigen Preisempfehlungen. Darunter zeigen Verlaufskarten den Preisverlauf. Rechts stehen die Viertelstundenpreise für heute und morgen in separaten Tabellen. Der Aktualisierungsbutton fragt die CKW-Daten bei Bedarf sofort erneut ab.
 
@@ -359,6 +359,8 @@ Home Assistant sendet damit sofort eine neue Anfrage an die CKW-API. Das kann ke
 Richte zuerst die SMTP-Integration in Home Assistant ein und füge dort einen Empfänger hinzu. Ersetze in den Beispielen `notify.DEIN_EMAIL` durch die von Home Assistant angelegte Notify-Entity.
 
 Die folgende Automation sendet eine E-Mail, wenn eines der vier **heutigen** Zeitfenster beginnt. Für morgen die vier Entity-IDs auf die entsprechenden `_morgen_`-Sensoren ändern. Home Assistant aktualisiert Template-Trigger, die `now()` enthalten, zu Beginn jeder Minute.
+
+**Die E-Mail ist zunächst nur als Test gedacht:** Sie bestätigt, dass die Automation zum Beginn des berechneten Zeitfensters auslöst und die Benachrichtigung ankommt. Die E-Mail schaltet selbst keine Geräte oder Sensoren. Wenn der zeitliche Auslöser zuverlässig funktioniert, kann die Benachrichtigungsaktion durch die gewünschte Schaltaktion ersetzt werden.
 
 ```yaml
 alias: CKW – E-Mail zu den Preisfenstern
